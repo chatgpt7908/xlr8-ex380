@@ -22,9 +22,9 @@ Requirements:
 - A client certificate exists with the username: acme-auditor
 - A group exists with the name: acme-corp
 - Members of this group have access to the cluster role: cluster-reader
-- The client certificate exists at: /home/student/kubeconfig-acme.config
-- The client certificate must not be able to create or delete projects
-- The client certificate must be able to view all pods in the cluster
+- The config exists at: /home/student/kubeconfig-acme.config ,acme.key,acme.crt
+- The user must not be able to create or delete projects
+- The user  must be able to view all pods in the cluster
 
 EOF
 
