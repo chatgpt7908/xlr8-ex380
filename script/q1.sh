@@ -1,5 +1,75 @@
 #!/bin/bash
 
+
+clear
+echo "=============================================="
+echo " EX380 Q1 – SIMPLE COMPONENT CLEANUP"
+echo " (NO OAUTH / NO LDAP TOUCH)"
+echo "=============================================="
+echo
+
+# -------- VARIABLES --------
+NS="openshift-config"
+SECRET="ldap-bind-pass"
+CONFIGMAP="ldap-ca-config"
+USER="kristendelgado"
+
+info () { echo "▶ $1"; }
+ok ()   { echo "  [OK] $1"; }
+skip () { echo "  [SKIP] $1"; }
+
+# -------- SECRET --------
+info "Checking Secret '${SECRET}'"
+if oc get secret "${SECRET}" -n "${NS}" &>/dev/null; then
+  oc delete secret "${SECRET}" -n "${NS}"
+  ok "Secret deleted"
+else
+  skip "Secret not found"
+fi
+
+echo
+
+# -------- CONFIGMAP --------
+info "Checking ConfigMap '${CONFIGMAP}'"
+if oc get configmap "${CONFIGMAP}" -n "${NS}" &>/dev/null; then
+  oc delete configmap "${CONFIGMAP}" -n "${NS}"
+  ok "ConfigMap deleted"
+else
+  skip "ConfigMap not found"
+fi
+
+echo
+
+# -------- USER --------
+info "Checking User '${USER}'"
+if oc get user "${USER}" &>/dev/null; then
+  oc delete user "${USER}"
+  ok "User deleted"
+else
+  skip "User not found"
+fi
+
+echo
+
+# -------- IDENTITY --------
+info "Checking Identity mapping for '${USER}'"
+IDENTITY=$(oc get identity -o jsonpath="{.items[?(@.user.name=='${USER}')].metadata.name}")
+
+if [ -n "$IDENTITY" ]; then
+  oc delete identity "$IDENTITY"
+  ok "Identity deleted (${IDENTITY})"
+else
+  skip "No identity mapping found"
+fi
+
+echo
+echo "=============================================="
+echo " COMPONENT CLEANUP COMPLETE"
+echo "=============================================="
+echo
+
+
+
 clear
 echo "=============================================="
 echo " EX380 MOCK EXAM – QUESTION 1"
